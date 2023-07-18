@@ -2,56 +2,44 @@ import numpy as np
 import pickle
 import streamlit as st
 
-# loading the saved model 
-loaded_model = pickle.load(open('traineddp_model.sav','rb'))
+# Loading the saved model
+loaded_model = pickle.load(open('traineddp_model.sav', 'rb'))
 
-#creating a function for prediction 
-
+# Creating a function for prediction
 def diabetes_prediction(input_data):
-
-    #changing input data into numpy array
     input_data_as_numpy_array = np.asarray(input_data)
-
-    #reshape the array as we are predicting for one instance
-    input_data_reshaped = input_data_as_numpy_array.reshape(1,-1)
-
+    input_data_reshaped = input_data_as_numpy_array.reshape(1, -1)
     prediction = loaded_model.predict(input_data_reshaped)
-    print(prediction)
-
     if prediction[0] == 0:
         return 'Patient is non-diabetic'
     else:
         return 'Patient is diabetic'
-    
-
 
 def main():
-
-    # giving a title
     st.title('Diabetes Prediction Web App')
 
-    # getting the input data from the user
+    # Getting the input data from the user
+    pregnancies = st.text_input('Number of Pregnancies:')
+    glucose = st.text_input('Glucose Level:')
+    blood_pressure = st.text_input('Blood Pressure value:')
+    skin_thickness = st.text_input('Skin Thickness value:')
+    insulin = st.text_input('Insulin level:')
+    bmi = st.text_input('BMI value:')
+    diabetes_pedigree_function = st.text_input('Diabetes Pedigree Function value:')
+    age = st.text_input('Age of the woman:')
+    submit_button = st.button('Diabetes Test Result')
 
-    Pregnancies = st.text_input('Number of Pregnancies:')
-    Glucose = st.text_input('Glucose Level:')
-    BloodPressure = st.text_input('Blood Pressure value:')
-    SkinThickness = st.text_input('Skin Thickness value:')
-    Insulin = st.text_input('Insulin level:')
-    BMI = st.text_input('BMI value:')
-    DiabetesPedigreeFunction= st.text_input('Diabetes Pedigree Function value:')
-    Age = st.text_input('Age of the woman:')
-    
+    # Validating input data
+    error_message = ''
+    if submit_button:
+        if not all([pregnancies, glucose, blood_pressure, skin_thickness, insulin, bmi, diabetes_pedigree_function, age]):
+            error_message = 'Please provide values for all input fields.'
 
-    #code for Prediction
-    diagonsis = ' '
-
-    #creating a button for Prediction
-    if st.button ('Diabetes Test Result'):
-        diagonsis = diabetes_prediction([Pregnancies, Glucose, BloodPressure, SkinThickness, Insulin, BMI, DiabetesPedigreeFunction, Age])
-
-    st.success(diagonsis)
-
+    if error_message:
+        st.error(error_message)
+    elif submit_button:
+        diagnosis = diabetes_prediction([pregnancies, glucose, blood_pressure, skin_thickness, insulin, bmi, diabetes_pedigree_function, age])
+        st.success(diagnosis)
 
 if __name__ == '__main__':
-     main()
-    
+    main()
